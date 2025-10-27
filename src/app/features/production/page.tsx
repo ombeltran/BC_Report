@@ -15,15 +15,15 @@ function ProductionPage() {
 
 
     const handleUsers = async () => {
-        const secretToken = process.env.NEXT_PUBLIC_TOKEN_SECRET
 
-        const res = await fetch('/api/users', {
+        const res = await fetch('/api/auth/login', {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${secretToken}`
-            }
-        })
+            credentials: "include", // Incluir cookies en la solicitud
+        });
+
+        if (!res.ok) {
+            throw new Error("No autorizado o fallo en la petición");
+        }
 
         const data = await res.json()
         return data
@@ -43,24 +43,33 @@ function ProductionPage() {
         fetchUsers();
     }, []);
 
-
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        console.log('Formulario enviado');
-
-        // const res = await fetch('/api/production', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Bearer tu_token_secreto' // si usas middleware
-        //     },
-        //     body: JSON.stringify(form)
-        // })
-
-        // const data = await res.json()
-        // console.log('Registro creado:', data)
+    type FormData = {
+        brand: string;
+        model: string;
+        serial_N: string;
+        category: string;
+        note: string;
+        complete: string;
+        user: string;
     }
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const form = e.currentTarget; // mucho mejor que e.target
+
+        const data: FormData = {
+            brand: form.brand.value,
+            model: form.model.value,
+            serial_N: form.serial_N.value,
+            category: form.category.value,
+            note: form.note.value,
+            complete: form.complete.value,
+            user: form.user.value,
+        };
+
+        console.log("Formulario enviado", data);
+    };
 
     return (
         <div className="flex flex-col justify-center items-center w-screen">
@@ -130,7 +139,7 @@ function ProductionPage() {
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">Complete:</h3>
                         <select
-                        //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+                            //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
                             className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
                             name="complete"
                             id="complete"

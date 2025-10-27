@@ -16,6 +16,7 @@ model User {
   codEmployee Int @unique
   name  String
   lastName  String
+  password String
   tareas  Production[] // Relation one to many
 }
 
