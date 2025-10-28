@@ -1,5 +1,5 @@
 "use client"
-
+import { useUser } from "@/context/userContext";
 import { useEffect, useState } from "react";
 
 function ProductionPage() {
@@ -12,36 +12,36 @@ function ProductionPage() {
     }
 
     const [userData, setUserData] = useState<User[]>([])
+    const { user } = useUser();
 
+    // const handleUsers = async () => {
 
-    const handleUsers = async () => {
+    //     const res = await fetch('/api/auth/login', {
+    //         method: 'GET',
+    //         credentials: "include", // Incluir cookies en la solicitud
+    //     });
 
-        const res = await fetch('/api/auth/login', {
-            method: 'GET',
-            credentials: "include", // Incluir cookies en la solicitud
-        });
+    //     if (!res.ok) {
+    //         throw new Error("No autorizado o fallo en la petición");
+    //     }
 
-        if (!res.ok) {
-            throw new Error("No autorizado o fallo en la petición");
-        }
+    //     const data = await res.json()
+    //     return data
+    // }
 
-        const data = await res.json()
-        return data
-    }
+    // useEffect(() => {
+    //     const fetchUsers = async () => {
+    //         try {
+    //             const data = await handleUsers();
+    //             // console.log(data);
+    //             setUserData(data)
+    //         } catch (error) {
+    //             console.error('Error al obtener usuarios:', error);
+    //         }
+    //     };
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const data = await handleUsers();
-                // console.log(data);
-                setUserData(data)
-            } catch (error) {
-                console.error('Error al obtener usuarios:', error);
-            }
-        };
-
-        fetchUsers();
-    }, []);
+    //     fetchUsers();
+    // }, []);
 
     type FormData = {
         brand: string;
@@ -83,23 +83,33 @@ function ProductionPage() {
                     {/* Brand section */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">Brand:</h3>
-                        <input
-                            className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            type="text"
-                            name="brand"
-                            placeholder="Report brand here"
-                        />
+                        <select
+                            //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+                            className="border-2 border-slate-100/50 rounded py-2 px-1 sm:min-w-[334px] w-[250px] text-gray-500"
+                            name="complete"
+                            id="complete"
+                        >
+                            <option value="" defaultValue="" className="text-black">Select a value</option>
+                            <option value="Samsung" className="text-black">Samsung</option>
+                            <option value="LG" className="text-black">LG</option>
+                            <option value="Sony" className="text-black">Sony</option>
+                        </select>
                     </div>
 
                     {/* Model section */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">Model:</h3>
-                        <input
-                            className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            type="text"
-                            name="model"
-                            placeholder="Report model here"
-                        />
+                        <select
+                            //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+                            className="border-2 border-slate-100/50 rounded py-2 px-1 sm:min-w-[334px] w-[250px] text-gray-500"
+                            name="complete"
+                            id="complete"
+                        >
+                            <option value="" defaultValue="" className="text-black">Select a value</option>
+                            <option value="Samsung" className="text-black">QN65LS03PUA</option>
+                            <option value="LG" className="text-black">OLED65B4PUA</option>
+                            <option value="Sony" className="text-black">K-85XR90K</option>
+                        </select>
                     </div>
 
                     {/* Serial number */}
@@ -153,19 +163,14 @@ function ProductionPage() {
                     {/* User */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">User:</h3>
-                        <select
-                            //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+                        <div
                             className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            name="user"
-                            id="user"
                         >
-                            <option value="" defaultValue="" className="text-black">Select a value</option>
-                            {userData.map(user => (
-                                <option className="text-black" key={user.id} value={user.id}>
-                                    {user.name} {user.lastName}
-                                </option>
-                            ))}
-                        </select>
+                            {
+                                user && user
+                            }
+                        </div>
+                        
                     </div>
 
                     <div className="sm:ml-0 ml-2 mt-2 text-end">

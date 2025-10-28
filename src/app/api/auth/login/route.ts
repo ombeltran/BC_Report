@@ -4,18 +4,17 @@ import { comparePassword } from "@/utils/bcrypt";
 import { generateToken, verifyToken } from "@/utils/jwt";
 import { cookies } from "next/headers";
 
-
 // GET /api/auth/login
 export async function GET() {
   try {
-    const cookieStore = cookies(); // ⚠️ No usar await
-    const token = cookieStore.get("token")?.value; // ✅ Esto funciona
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
 
     if (!token) {
       return NextResponse.json({ error: "No token provided" }, { status: 401 });
     }
 
-    const payload = verifyToken(token); // valida JWT
+    const payload = verifyToken(token); // verify JWT
     if (!payload) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
@@ -63,7 +62,11 @@ export async function POST(request: Request) {
     const token = generateToken({ id: user.id, codEmployee: user.codEmployee });
 
     // You can save the token ina safe cookie
-    const response = NextResponse.json({ message: "Successful login", token });
+    const response = NextResponse.json({
+      message: "Successful login",
+      user: { id: user.id, name: user.name, codEmployee: user.codEmployee }
+    });
+
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
