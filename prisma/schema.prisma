@@ -12,22 +12,41 @@ datasource db {
 }
 
 model User {
-  id      Int     @id @default(autoincrement())
-  codEmployee Int @unique
-  name  String
-  lastName  String
-  password String
-  tareas  Production[] // Relation one to many
+  id          Int          @id @default(autoincrement())
+  codEmployee Int          @unique
+  name        String
+  lastName    String
+  password    String
+  role        String
+  task        Production[] // Relation one to many
 }
 
 model Production {
-  id        Int     @id @default(autoincrement())
-  brand String
-  model String
-  seria_N String
-  category  String
-  note String
+  id       Int     @id @default(autoincrement())
+  brand    String
+  model    String
+  seria_N  String
+  category String
+  note     String
   complete Boolean @default(false)
-  user   User @relation(fields: [userId], references: [id])
-  userId Int     // Foreing key
+  user     User    @relation(fields: [userId], references: [id])
+  userId   Int // Foreing key
+}
+
+model Brand {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  myBrand Model[]
+}
+
+model Model {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  brand Brand  @relation(fields: [brandId], references: [id])
+  brandId Int
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
 }

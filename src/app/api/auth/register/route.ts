@@ -16,7 +16,7 @@ export async function GET() {
 // ******* Create a new user *******
 export async function POST(request: Request) {
     try {
-        const { codEmployee, name, lastName, password } = await request.json()
+        const { codEmployee, name, lastName, password, role } = await request.json()
 
         // Validate fields
         if (!codEmployee) {
@@ -29,6 +29,9 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "LastName field is required" }, { status: 400 });
         }
         if (!password) {
+            return NextResponse.json({ error: "Password field is required" }, { status: 400 });
+        }
+        if (!role) {
             return NextResponse.json({ error: "Password field is required" }, { status: 400 });
         }
 
@@ -44,6 +47,7 @@ export async function POST(request: Request) {
                 codEmployee,
                 name,
                 lastName,
+                role,
                 password: await hashPassword(password)
             }
         });

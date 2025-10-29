@@ -11,37 +11,82 @@ function ProductionPage() {
         lastName: String
     }
 
-    const [userData, setUserData] = useState<User[]>([])
+    interface Brand { id: number; name: string; }
+    interface Model { id: number; name: string; brandId: number; }
+    interface Category { id: number; name: string; }
+
+    // const [userData, setUserData] = useState<User[]>([])
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [models, setModels] = useState<Model[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedBrand, setSelectedBrand] = useState<string>("");
     const { user } = useUser();
 
-    // const handleUsers = async () => {
+    //Allow match models and brand
+    const filteredModels = models.filter(
+        (model) =>
+            brands.find((b) => b.name === selectedBrand)?.id === model.brandId
+    );
 
-    //     const res = await fetch('/api/auth/login', {
-    //         method: 'GET',
-    //         credentials: "include", // Incluir cookies en la solicitud
-    //     });
+    // Fetch brands from API
+    useEffect(() => {
+        const fetchBrands = async () => {
+            try {
+                const res = await fetch("/api/brands", {
+                    method: "GET",
+                });
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                const data = await res.json();
+                setBrands(data);
+                // console.log("Brands:", data);
+            } catch (error) {
+                console.error("Error fetching brands:", error);
+            }
+        }
+        fetchBrands();
+    }, []);
 
-    //     if (!res.ok) {
-    //         throw new Error("No autorizado o fallo en la petición");
-    //     }
+    // Fetch categories from API
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch("/api/categories", {
+                    method: "GET",
+                });
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                const data = await res.json();
+                setCategories(data);
+                // console.log("Categories:", data);
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        }
+        fetchCategories();
+    }, []);
 
-    //     const data = await res.json()
-    //     return data
-    // }
-
-    // useEffect(() => {
-    //     const fetchUsers = async () => {
-    //         try {
-    //             const data = await handleUsers();
-    //             // console.log(data);
-    //             setUserData(data)
-    //         } catch (error) {
-    //             console.error('Error al obtener usuarios:', error);
-    //         }
-    //     };
-
-    //     fetchUsers();
-    // }, []);
+    // Fetch models from API
+    useEffect(() => {
+        const fetchModels = async () => {
+            try {
+                const res = await fetch("/api/models", {
+                    method: "GET",
+                });
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                const data = await res.json();
+                setModels(data);
+                // console.log("Models:", data);
+            } catch (error) {
+                console.error("Error fetching models:", error);
+            }
+        }
+        fetchModels();
+    }, []);
 
     type FormData = {
         brand: string;
@@ -73,7 +118,7 @@ function ProductionPage() {
 
     return (
         <div className="flex flex-col justify-center items-center w-screen">
-            <h1 className="p-4 text-4xl font-bold sm:m-12 m7 text-center">Productivity Record</h1>
+            <h1 className="p-4 text-4xl font-bold sm:mt-12 mt-7 mb-6 text-center">Productivity Record</h1>
             <div className="flex flex-col justify-center items-center">
                 <form
                     className="flex flex-col gap-3 px-4 border-2 p-8 border-white rounded sm:min-w-[600px] mb-6"
@@ -83,33 +128,38 @@ function ProductionPage() {
                     {/* Brand section */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">Brand:</h3>
-                        <select
-                            //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            className="border-2 border-slate-100/50 rounded py-2 px-1 sm:min-w-[334px] w-[250px] text-gray-500"
-                            name="complete"
-                            id="complete"
-                        >
-                            <option value="" defaultValue="" className="text-black">Select a value</option>
-                            <option value="Samsung" className="text-black">Samsung</option>
-                            <option value="LG" className="text-black">LG</option>
-                            <option value="Sony" className="text-black">Sony</option>
-                        </select>
+                        <datalist id="brands" >
+                            {
+                                brands.map((brand) => (
+                                    <option key={brand.id} value={brand.name as string} className="text-black">{brand.name}</option>
+                                ))
+                            }
+                        </datalist>
+                        <input
+                            className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+                            list="brands"
+                            name="brand"
+                            placeholder="Select or type a brand"
+                            onChange={(e) => setSelectedBrand(e.target.value)} // ✅ importante
+                        />
                     </div>
 
                     {/* Model section */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">Model:</h3>
-                        <select
-                            //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            className="border-2 border-slate-100/50 rounded py-2 px-1 sm:min-w-[334px] w-[250px] text-gray-500"
-                            name="complete"
-                            id="complete"
-                        >
-                            <option value="" defaultValue="" className="text-black">Select a value</option>
-                            <option value="Samsung" className="text-black">QN65LS03PUA</option>
-                            <option value="LG" className="text-black">OLED65B4PUA</option>
-                            <option value="Sony" className="text-black">K-85XR90K</option>
-                        </select>
+                        <datalist id="models" >
+                            {
+                                filteredModels.map((model) => (
+                                    <option key={model.id} value={model.name as string} className="text-black">{model.name}</option>
+                                ))
+                            }
+                        </datalist>
+                        <input
+                            className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+                            list="models"
+                            name="model"
+                            placeholder="Select or type a model"
+                        />
                     </div>
 
                     {/* Serial number */}
@@ -126,11 +176,18 @@ function ProductionPage() {
                     {/* Category */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">Category:</h3>
+                        <datalist id="categories" >
+                            {
+                                categories.map((category) => (
+                                    <option key={category.id} value={category.name as string} className="text-black">{category.name}</option>
+                                ))
+                            }
+                        </datalist>
                         <input
                             className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            type="text"
+                            list="categories"
                             name="category"
-                            placeholder="Report category here"
+                            placeholder="Select or type a category"
                         />
                     </div>
 
@@ -145,20 +202,6 @@ function ProductionPage() {
                         />
                     </div>
 
-                    {/* Complete */}
-                    <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
-                        <h3 className="text-2xl ">Complete:</h3>
-                        <select
-                            //className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            name="complete"
-                            id="complete"
-                        >
-                            <option value="" defaultValue="" className="text-black">Select a value</option>
-                            <option value="true" className="text-black">true</option>
-                            <option value="false" className="text-black">false</option>
-                        </select>
-                    </div>
 
                     {/* User */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
@@ -170,7 +213,7 @@ function ProductionPage() {
                                 user && user
                             }
                         </div>
-                        
+
                     </div>
 
                     <div className="sm:ml-0 ml-2 mt-2 text-end">
