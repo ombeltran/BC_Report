@@ -28,9 +28,9 @@ model Production {
   seria_N  String
   category String
   note     String
-  complete Boolean @default(false)
   user     User    @relation(fields: [userId], references: [id])
   userId   Int // Foreing key
+  createdAt DateTime @default(now())
 }
 
 model Brand {

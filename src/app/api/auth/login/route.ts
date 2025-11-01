@@ -3,38 +3,24 @@ import { prisma } from "@/libs/prisma";
 import { comparePassword } from "@/utils/bcrypt";
 import { generateToken, verifyToken } from "@/utils/jwt";
 import { cookies } from "next/headers";
+import { COOKIE_NAME } from "@/constants";
 
 // GET /api/auth/login
 export async function GET() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) {
+    return NextResponse.json({ error: "No token provided" }, { status: 401 });
+  }
+
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    verifyToken(token);
+    const response = { user: "Authenticated" };
+    return new Response(JSON.stringify(response), { status: 200 });
 
-    if (!token) {
-      return NextResponse.json({ error: "No token provided" }, { status: 401 });
-    }
-
-    const payload = verifyToken(token); // verify JWT
-    if (!payload) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        codEmployee: true,
-        name: true,
-        lastName: true,
-      },
-    });
-
-    return NextResponse.json(users);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json(
-      { error: "No autorizado o fallo en la petición" },
-      { status: 401 }
-    );
+  } catch (error) {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 }
 
@@ -61,15 +47,19 @@ export async function POST(request: Request) {
 
     const token = generateToken({ id: user.id, codEmployee: user.codEmployee });
 
-    // You can save the token ina safe cookie
+
+    // You can save the token in a safe cookie
     const response = NextResponse.json({
-      message: "Successful login",
-      user: { id: user.id, name: user.name, codEmployee: user.codEmployee }
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      token,
     });
 
-    response.cookies.set("token", token, {
+    response.cookies.set(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24, // 1 día
       path: "/",
     });

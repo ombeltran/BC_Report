@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 const SECRET_KEY = process.env.JWT_SECRET as string;
 
 if (!SECRET_KEY) {
-  throw new Error("JWT_SECRET is not defined in the environment variables");
+  throw new Error("JWT_SECRET is not defined");
 }
 
 export function generateToken(payload: object): string {

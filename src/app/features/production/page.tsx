@@ -1,26 +1,28 @@
 "use client"
 import { useUser } from "@/context/userContext";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 function ProductionPage() {
 
-    interface User {
-        id: number,
-        codEmployee: number,
-        name: String,
-        lastName: String
-    }
+    // interface User {
+    //     id: number,
+    //     codEmployee: number,
+    //     name: String,
+    //     lastName: String
+    // }
 
     interface Brand { id: number; name: string; }
     interface Model { id: number; name: string; brandId: number; }
     interface Category { id: number; name: string; }
 
-    // const [userData, setUserData] = useState<User[]>([])
     const [brands, setBrands] = useState<Brand[]>([]);
     const [models, setModels] = useState<Model[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedBrand, setSelectedBrand] = useState<string>("");
+    const [checkedUser, setCheckedUser] = useState(false);
     const { user } = useUser();
+    const router = useRouter();
 
     //Allow match models and brand
     const filteredModels = models.filter(
@@ -88,33 +90,61 @@ function ProductionPage() {
         fetchModels();
     }, []);
 
+    useEffect(() => {
+    if (!checkedUser && user !== undefined) {
+        setCheckedUser(true);
+
+        if (user === null) {
+            alert(
+                "Something went wrong, please login again. If the problem persists, contact the administrator."
+            );
+            router.push("/");
+        }
+    }
+}, [user, checkedUser, router]);
+
     type FormData = {
         brand: string;
         model: string;
-        serial_N: string;
+        seria_N: string;
         category: string;
         note: string;
-        complete: string;
-        user: string;
+        user: string | null;
     }
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const form = e.currentTarget; // mucho mejor que e.target
+        const form = e.currentTarget; // It is better to use e.target
 
         const data: FormData = {
             brand: form.brand.value,
             model: form.model.value,
-            serial_N: form.serial_N.value,
+            seria_N: form.seria_N.value,
             category: form.category.value,
             note: form.note.value,
-            complete: form.complete.value,
-            user: form.user.value,
+            user: user ? user.name.toString() : null,
         };
 
-        console.log("Formulario enviado", data);
-    };
+        fetch("/api/production", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+                brand: data.brand,
+                model: data.model,
+                seria_N: data.seria_N,
+                category: data.category,
+                note: data.note,
+                userId: user?.id
+            }),
+        });
+
+        // Limpia todo correctamente
+        form.reset();
+        setSelectedBrand("");
+    }
 
     return (
         <div className="flex flex-col justify-center items-center w-screen">
@@ -140,7 +170,7 @@ function ProductionPage() {
                             list="brands"
                             name="brand"
                             placeholder="Select or type a brand"
-                            onChange={(e) => setSelectedBrand(e.target.value)} // ✅ importante
+                            onChange={(e) => setSelectedBrand(e.target.value)}
                         />
                     </div>
 
@@ -168,7 +198,7 @@ function ProductionPage() {
                         <input
                             className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
                             type="text"
-                            name="serial_N"
+                            name="seria_N"
                             placeholder="Report serial number here"
                         />
                     </div>
@@ -209,9 +239,7 @@ function ProductionPage() {
                         <div
                             className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
                         >
-                            {
-                                user && user
-                            }
+                            {user && user.name}
                         </div>
 
                     </div>

@@ -18,16 +18,17 @@ function Login() {
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(loginData),
     });
 
     const data = await response.json();
-
+    
     if (response.ok) {
-      // ✅ Update UserContext
-      setUser(data.user.name);
+      // Update UserContext
+      setUser({ id: data.id, name: data.name, role: data.role });
 
-      // ✅ Persist for refresh
+      // Persist for refresh
       localStorage.setItem("user", JSON.stringify(data.user));
 
       form.reset();
