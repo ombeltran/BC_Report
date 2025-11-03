@@ -35,7 +35,10 @@ function Login() {
 
       router.push("/features/production");
     } else {
-      console.error("Error en login:", data.error);
+      // console.error("Error en login:", data.error);
+      alert("Your user name or your password are wrong. Please try again");
+      form.reset();
+      router.replace("/");
     }
   };
 

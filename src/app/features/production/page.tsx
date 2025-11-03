@@ -91,17 +91,17 @@ function ProductionPage() {
     }, []);
 
     useEffect(() => {
-    if (!checkedUser && user !== undefined) {
-        setCheckedUser(true);
+        if (!checkedUser && user !== undefined) {
+            setCheckedUser(true);
 
-        if (user === null) {
-            alert(
-                "Something went wrong, please login again. If the problem persists, contact the administrator."
-            );
-            router.push("/");
+            if (user === null) {
+                alert(
+                    "Something went wrong, please login again. If the problem persists, contact the administrator."
+                );
+                router.push("/");
+            }
         }
-    }
-}, [user, checkedUser, router]);
+    }, [user, checkedUser, router]);
 
     type FormData = {
         brand: string;
@@ -116,7 +116,7 @@ function ProductionPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const form = e.currentTarget; // It is better to use e.target
+        const form = e.currentTarget;
 
         const data: FormData = {
             brand: form.brand.value,
@@ -127,24 +127,33 @@ function ProductionPage() {
             user: user ? user.name.toString() : null,
         };
 
-        fetch("/api/production", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-                brand: data.brand,
-                model: data.model,
-                seria_N: data.seria_N,
-                category: data.category,
-                note: data.note,
-                userId: user?.id
-            }),
-        });
+        try {
+            const res = await fetch("/api/production", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                    brand: data.brand,
+                    model: data.model,
+                    seria_N: data.seria_N,
+                    category: data.category,
+                    note: data.note,
+                    userId: user?.id,
+                }),
+            });
 
-        // Limpia todo correctamente
-        form.reset();
-        setSelectedBrand("");
-    }
+            if (!res.ok) {
+                throw new Error(`Register with error: ${res.status}`);
+            }
+
+            form.reset();
+            setSelectedBrand("");
+            alert("register created successful");
+        } catch (error) {
+            console.error("Error al enviar el formulario:", error);
+            alert("There is a problem to register. Try it again.");
+        }
+    };
 
     return (
         <div className="flex flex-col justify-center items-center w-screen">
