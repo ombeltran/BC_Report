@@ -5,13 +5,6 @@ import { useRouter } from "next/navigation";
 
 function ProductionPage() {
 
-    // interface User {
-    //     id: number,
-    //     codEmployee: number,
-    //     name: String,
-    //     lastName: String
-    // }
-
     interface Brand { id: number; name: string; }
     interface Model { id: number; name: string; brandId: number; }
     interface Category { id: number; name: string; }
@@ -21,6 +14,7 @@ function ProductionPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedBrand, setSelectedBrand] = useState<string>("");
     const [checkedUser, setCheckedUser] = useState(false);
+    const [alertForm, setAlertForm] = useState<string>("")
     const { user } = useUser();
     const router = useRouter();
 
@@ -112,6 +106,17 @@ function ProductionPage() {
         user: string | null;
     }
 
+    // This useEffect handles the alert form visibility into teh form when de user no fill some form field
+    useEffect(() => {
+        if (alertForm) {
+            const timer = setTimeout(() => {
+                setAlertForm("");
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [alertForm]);
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -126,6 +131,24 @@ function ProductionPage() {
             note: form.note.value,
             user: user ? user.name.toString() : null,
         };
+
+        // Validate if the form fields are filled
+        if (!data.brand) {
+            setAlertForm("Please the brand field is required");
+            return;
+        }
+        if (!data.model) {
+            setAlertForm("Please the model field is required");
+            return;
+        }
+        if (!data.seria_N) {
+            setAlertForm("Please the serial number field is required");
+            return;
+        }
+        if (!data.category) {
+            setAlertForm("Please the field category is required");
+            return;
+        }
 
         try {
             const res = await fetch("/api/production", {
@@ -201,17 +224,6 @@ function ProductionPage() {
                         />
                     </div>
 
-                    {/* Serial number */}
-                    <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
-                        <h3 className="text-2xl ">Serial number:</h3>
-                        <input
-                            className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
-                            type="text"
-                            name="seria_N"
-                            placeholder="Report serial number here"
-                        />
-                    </div>
-
                     {/* Category */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
                         <h3 className="text-2xl ">Category:</h3>
@@ -241,6 +253,16 @@ function ProductionPage() {
                         />
                     </div>
 
+                    {/* Serial number */}
+                    <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
+                        <h3 className="text-2xl ">Serial number:</h3>
+                        <input
+                            className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+                            type="text"
+                            name="seria_N"
+                            placeholder="Report serial number here"
+                        />
+                    </div>
 
                     {/* User */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:justify-between justify-center sm:ml-0 ml-2">
@@ -252,6 +274,12 @@ function ProductionPage() {
                         </div>
 
                     </div>
+
+                    {alertForm && (
+                        <div className="text-red-500 font-bold mb-4">
+                            {alertForm}
+                        </div>
+                    )}
 
                     <div className="sm:ml-0 ml-2 mt-2 text-end">
                         <input
