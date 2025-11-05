@@ -123,6 +123,30 @@ function ProductionPage() {
 
         const form = e.currentTarget;
 
+        //Process that ensure the brand, model, and category are selected from the list
+        const brandValue = form.brand.value.trim();
+        const modelValue = form.model.value.trim();
+        const categoryValue = form.category.value.trim();
+
+        const validBrand = brands.some(b => b.name === brandValue);
+        const validModel = filteredModels.some(m => m.name === modelValue);
+        const validCategory = categories.some(c => c.name === categoryValue);
+
+        if (!validBrand) {
+            setAlertForm("The brand must be selected from the list.");
+            return;
+        }
+
+        if (!validModel) {
+            setAlertForm("The model must be selected from the list.");
+            return;
+        }
+
+        if (!validCategory) {
+            setAlertForm("The category must be selected from the list.");
+            return;
+        }
+
         const data: FormData = {
             brand: form.brand.value,
             model: form.model.value,
@@ -202,6 +226,7 @@ function ProductionPage() {
                             list="brands"
                             name="brand"
                             placeholder="Select or type a brand"
+                            value={selectedBrand} 
                             onChange={(e) => setSelectedBrand(e.target.value)}
                         />
                     </div>
