@@ -150,7 +150,7 @@ function ProductionPage() {
         const data: FormData = {
             brand: form.brand.value,
             model: form.model.value,
-            seria_N: form.seria_N.value,
+            seria_N: form.seria_N.value.toUpperCase(),
             category: form.category.value,
             note: form.note.value,
             user: user ? user.name.toString() : null,

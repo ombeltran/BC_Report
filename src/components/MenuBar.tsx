@@ -2,8 +2,11 @@
 
 import { FiLogOut } from "react-icons/fi";
 import { HiOutlineDownload } from "react-icons/hi";
+import { FaUserFriends } from "react-icons/fa";
+import { BsDatabaseAdd } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
+import Link from "next/link";
 
 function MenuBar() {
     const router = useRouter();
@@ -34,15 +37,37 @@ function MenuBar() {
                 </li>
 
                 {user?.role === 'master' && (
-                    <li 
-                    className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
-                    onClick={() => window.open("/api/export", "_blank")}
-                    >
-                        <div className="bg-red-600 p-1 rounded-lg">
-                            <HiOutlineDownload />
-                        </div>
-                        Download
-                    </li>
+                    <>
+                        <li
+                            className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
+                            onClick={() => window.open("/api/export", "_blank")}
+                        >
+                            <div className="bg-red-600 p-1 rounded-lg">
+                                <HiOutlineDownload />
+                            </div>
+                            Download
+                        </li>
+                        <Link href="/features/createUsers">
+                            <li
+                                className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
+                            >
+                                <div className="bg-red-600 p-1 rounded-lg">
+                                    <FaUserFriends />
+                                </div>
+                                Users
+                            </li>
+                        </Link>
+                        <Link href="/features/createModels">
+                            <li
+                                className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
+                            >
+                                <div className="bg-red-600 p-1 rounded-lg">
+                                    <BsDatabaseAdd />
+                                </div>
+                                New models
+                            </li>
+                        </Link>
+                    </>
                 )}
             </ul>
         </div>
