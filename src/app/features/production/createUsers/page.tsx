@@ -1,8 +1,10 @@
 'use client'
+import { log } from "console";
 import { useEffect, useState } from "react";
 
 function CreateUsers() {
     const [users, setUsers] = useState<UserFormData[]>([]);
+    const [selectedUser, setSelectedUser] = useState<UserFormData | null>(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -37,7 +39,7 @@ function CreateUsers() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const form = e.currentTarget; // <-- Guardamos la referencia antes del await
+        const form = e.currentTarget;
 
         try {
             const formData = new FormData(form);
@@ -98,6 +100,15 @@ function CreateUsers() {
         }
     };
 
+    const handleEdit = (item: UserFormData) => {
+        setSelectedUser(item);
+    };
+
+    const hadleDelete = (item: number) => {
+        console.log(`This is the number ${item}`);
+
+    }
+
     return (
         <div className="flex flex-row justify-center items-center gap-24 w-screen h-screen">
             <div className="flex flex-col justify-center items-center w-[550px] h-[550px]">
@@ -123,6 +134,7 @@ function CreateUsers() {
                                 className="border-2 border-slate-100/50 rounded p-2 min-w-[250px]"
                                 name="name"
                                 placeholder="User name"
+                                onChange={(e) => setSelectedUser(prev => prev ? { ...prev, name: e.target.value } : null)}
                             />
                         </div>
 
@@ -167,10 +179,10 @@ function CreateUsers() {
                     </div>
                 </form>
             </div>
-            <div className="flex flex-col border-2 border-white rounded w-[810px] h-[550px] py-10 overflow-auto">
+            <div className="flex flex-col border-2 border-white rounded w-[610px] h-[550px] py-10 overflow-auto">
                 <div className="flex px-[8%] font-bold text-2xl mb-6">
-                    <div className="w-28 mr-28">User code</div>
-                    <div className="w-12 mr-36">Name</div>
+                    <div className="w-28 mr-8">User code</div>
+                    <div className="w-12 mr-10">Name</div>
                     <div className="w-32">Last Name</div>
                 </div>
 
@@ -180,11 +192,21 @@ function CreateUsers() {
                             key={item.codEmployee}
                             className="flex px-[4%] py-3 mb-4 bg-gray-950/70"
                         >
-                            <div className="w-28 ml-[72px]">{item.codEmployee}</div>
-                            <div className="w-28 ml-[98px]">{item.name}</div>
-                            <div className="w-32 ml-[115px]">{item.lastName}</div>
-                            <div className="w-16 ml-[32px] text-center bg-green-700 rounded-[7px] font-bold">Edit</div>
-                            <div className="w-16 ml-[22px] text-center bg-red-700 rounded-[7px] font-bold">Delete</div>
+                            <div className="w-20 ml-[58px]">{item.codEmployee}</div>
+                            <div className="w-[85px] ml-[69px]">{item.name}</div>
+                            <div className="w-32 ml-[65px]">{item.lastName}</div>
+                            <button
+                                className="w-16 ml-[32px] px-4 text-center bg-green-700 rounded-[7px] font-bold"
+                                onClick={() => handleEdit(item)}
+                            >
+                                Edit
+                            </button>
+                            <button
+                                className="w-16 ml-[22px] mr-[10px] px-2 text-center bg-red-700 rounded-[7px] font-bold"
+                                onClick={() => hadleDelete(item.codEmployee)}
+                            >
+                                Delete
+                            </button>
                         </div>
                     )
 
