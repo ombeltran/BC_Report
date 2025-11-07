@@ -47,7 +47,7 @@ function MenuBar() {
                             </div>
                             Download
                         </li>
-                        <Link href="/features/createUsers">
+                        <Link href="/features/production/createUsers">
                             <li
                                 className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
                             >
@@ -57,7 +57,7 @@ function MenuBar() {
                                 Users
                             </li>
                         </Link>
-                        <Link href="/features/createModels">
+                        <Link href="/features/production/createModels">
                             <li
                                 className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
                             >
