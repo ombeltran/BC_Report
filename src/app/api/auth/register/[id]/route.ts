@@ -2,6 +2,8 @@ import { prisma } from "@/libs/prisma";
 import { NextResponse } from "next/server";
 import { hashPassword, comparePassword } from "@/utils/bcrypt";
 import { verifyToken } from "@/utils/jwt";
+import { cookies } from "next/headers";
+import { COOKIE_NAME } from "@/constants";
 
 type Context = { params: { id: string } };
 
@@ -27,52 +29,52 @@ export async function GET(request: Request, context: { params: { id: string } })
 }
 
 
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
 
-export async function PUT(request: Request, context: Context) {
-  try {
-    // Verify the token
-    await authenticate(request);
-
-    const { id } = context.params;
-    const data = await request.json();
-
-    // If come the password, hash it
-    if (data.password) {
-      data.password = await hashPassword(data.password);
-    }
-
-    const userUpdated = await prisma.user.update({
-      where: { id: Number(id) },
-      data,
-    });
-
-    return NextResponse.json(userUpdated);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 401 });
-    }
-    return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
+
+  const { id } = params;
+  const body = await request.json();
+
+  const updatedUser = await prisma.user.update({
+    where: { id: Number(id) },
+    data: {
+      codEmployee: body.codEmployee,
+      name: body.name,
+      lastName: body.lastName,
+      password: body.password ? await hashPassword(body.password) : undefined,
+      role: body.role,
+    },
+  });
+
+  return NextResponse.json(updatedUser);
 }
 
-export async function DELETE(request: Request, context: { params: { id: string } }) {
-  try {
-    // Verify the token
-    await authenticate(request);
 
-    const { id } = context.params;
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
 
-    // If come the password, hash it
-
-    const userDeleted = await prisma.user.delete({
-      where: { id: Number(id) },
-    });
-
-    return NextResponse.json(userDeleted);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 401 });
-    }
-    return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
+
+  const { id } = params;
+  const deletedUser = await prisma.user.delete({ where: { id: Number(id) } });
+
+  return NextResponse.json({ message: "User deleted", user: deletedUser });
 }

@@ -1,11 +1,23 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/libs/prisma";
+import { verifyToken } from "@/utils/jwt";
+import { cookies } from "next/headers";
+import { COOKIE_NAME } from "@/constants";
 
-const prisma = new PrismaClient();
-
+// GET /api/models
 export async function GET() {
-  const models = await prisma.model.findMany({
-    include: { brand: true }, // opcional: incluir info de la marca
-  });
-  return NextResponse.json(models);
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) {
+    return NextResponse.json({ error: "No token provided" }, { status: 401 });
+  }
+
+  try {
+    verifyToken(token);
+    const models = await prisma.model.findMany()
+    return NextResponse.json(models);
+  } catch (error) {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
 }
