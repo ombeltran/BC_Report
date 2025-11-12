@@ -1,33 +1,8 @@
 import { prisma } from "@/libs/prisma";
 import { NextResponse } from "next/server";
-import { hashPassword, comparePassword } from "@/utils/bcrypt";
 import { verifyToken } from "@/utils/jwt";
 import { cookies } from "next/headers";
 import { COOKIE_NAME } from "@/constants";
-
-// type Context = { params: { id: string } };
-
-// async function authenticate(request: Request) {
-//   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-//   if (!token) throw new Error("No token provided");
-  
-//   const payload = verifyToken(token);
-//   if (!payload) throw new Error("Invalid token");
-  
-//   return payload;
-// }
-
-export async function GET(request: Request, context: { params: { id: string } }) {
-  const { id } = context.params;
-  const user = await prisma.user.findUnique({
-    where: {
-      id: Number(id)
-    }
-  })
-
-  return NextResponse.json(user);
-}
-
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const cookieStore = await cookies();
@@ -45,18 +20,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { id } = params;
   const body = await request.json();
 
-  const updatedUser = await prisma.user.update({
+  const updatedModel = await prisma.model.update({
     where: { id: Number(id) },
     data: {
-      codEmployee: body.codEmployee,
+      id: body.id,
       name: body.name,
-      lastName: body.lastName,
-      password: body.password ? await hashPassword(body.password) : undefined,
-      role: body.role,
+      brandId: body.brandId,
     },
   });
 
-  return NextResponse.json(updatedUser);
+  return NextResponse.json(updatedModel);
 }
 
 
@@ -74,7 +47,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 
   const { id } = params;
-  const deletedUser = await prisma.user.delete({ where: { id: Number(id) } });
+  const deletedModel = await prisma.model.delete({ where: { id: Number(id) } });
 
-  return NextResponse.json({ message: "User deleted", user: deletedUser });
+  return NextResponse.json(deletedModel);
 }

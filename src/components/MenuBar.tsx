@@ -5,6 +5,7 @@ import { HiOutlineDownload } from "react-icons/hi";
 import { FaUserFriends } from "react-icons/fa";
 import { BsDatabaseAdd } from "react-icons/bs";
 import { TiHomeOutline } from "react-icons/ti";
+import { SiBrandfolder } from "react-icons/si";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
 import Link from "next/link";
@@ -114,6 +115,15 @@ function MenuBar() {
                                     Models
                                 </li>
                             </Link>
+
+                            <Link href="/features/production/createBrands">
+                                <li className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition">
+                                    <div className="bg-red-600 p-1 rounded-lg">
+                                        <SiBrandfolder />
+                                    </div>
+                                    Brands
+                                </li>
+                            </Link>
                         </>
                     )}
                 </ul>
@@ -166,6 +176,15 @@ function MenuBar() {
                                         <BsDatabaseAdd />
                                     </div>
                                     Models
+                                </li>
+                            </Link>
+
+                            <Link href="/features/production/createBrands">
+                                <li className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition">
+                                    <div className="bg-red-600 p-1 rounded-lg">
+                                        <SiBrandfolder />
+                                    </div>
+                                    Brands
                                 </li>
                             </Link>
                         </>

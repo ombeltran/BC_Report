@@ -7,19 +7,11 @@ type BrandData = {
   name: string;
 };
 
-type ModelData = {
-  id: number;
-  name: string;
-  brandId: number;
-};
-
 export default function CreateModels() {
   const [brands, setBrands] = useState<BrandData[]>([]);
-  const [models, setModels] = useState<ModelData[]>([]);
   const [reload, setReload] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<number | null>(null);
-  const [modelName, setModelName] = useState("")
-  const [modelBrandId, setModelBrandId] = useState<number | "">("")
+  const [selectedBrand, setSelectedBrand] = useState<number | null>(null);
+  const [brandName, setBrandName] = useState("")
   const [checked, setChecked] = useState(false);
 
   const handleBrands = async () => {
@@ -32,37 +24,23 @@ export default function CreateModels() {
     setBrands(data);
   };
 
-  const handleModels = async () => {
-    const res = await fetch("/api/models");
-    if (!res.ok) {
-      console.error("Error fetching models:", await res.text());
-      return;
-    }
-    const data: ModelData[] = await res.json();
-    // Sort desc and show 10 items
-    const top10Models = data.sort((a, b) => b.id - a.id).slice(0, 10);
-    setModels(top10Models);
-  }
-
   useEffect(() => {
     handleBrands();
-    handleModels();
   }, [reload])
 
   const refreshModels = () => setReload((prev) => !prev);
 
-  const handleEdit = (model: ModelData) => {
-    setSelectedModel(model.id);
-    setModelName(model.name);
-    setModelBrandId(model.brandId);
+  const handleEdit = (brand: BrandData) => {
+    setSelectedBrand(brand.id);
+    setBrandName(brand.name);
   };
 
-  const handleDelete = async (model: ModelData) => {
-    const confirmDelete = confirm(`Are you sure you want to delete ${model.name}?`);
+  const handleDelete = async (brand: BrandData) => {
+    const confirmDelete = confirm(`Are you sure you want to delete ${brand.name}?`);
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/api/models/${model.id}`, {
+      const res = await fetch(`/api/brands/${brand.id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -74,13 +52,12 @@ export default function CreateModels() {
         return;
       }
 
-      alert(`Model ${model.name} deleted successfully!`);
+      alert(`Brand ${brand.name} deleted successfully!`);
       // UI update...
       refreshModels();
 
       // Clean the form if you were editing the deleted user
-      setModelName("")
-      setModelBrandId("")
+      setBrandName("")
     } catch (error) {
       console.error("Delete error:", error);
     }
@@ -91,43 +68,40 @@ export default function CreateModels() {
 
     try {
       if (checked) {
-        // CREATE mode
-        const newModel = {
-          name: modelName,
-          brandId: modelBrandId,
+        // CREATE brand
+        const newBrand = {
+          name: brandName,
         };
 
-        const res = await fetch("/api/models", {
+        const res = await fetch("/api/brands", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newModel),
+          body: JSON.stringify(newBrand),
         });
 
         if (!res.ok) {
           const error = await res.text();
-          alert(`Error creating model: ${error}`);
+          alert(`Error creating brand: ${error}`);
           return;
         }
 
-        alert("Model created successfully!");
+        alert("Brand created successfully!");
         refreshModels();
-        setModelName("");
-        setModelBrandId("");
+        setBrandName("");
         setChecked(false);
       } else {
         // UPDATE mode
-        if (!selectedModel) {
+        if (!selectedBrand) {
           alert("Select a model to update");
           return;
         }
 
         const updateData = {
-          id: selectedModel,
-          name: modelName,
-          brandId: modelBrandId,
+          id: selectedBrand,
+          name: brandName,
         };
 
-        const res = await fetch(`/api/models/${selectedModel}`, {
+        const res = await fetch(`/api/brands/${selectedBrand}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updateData),
@@ -135,15 +109,14 @@ export default function CreateModels() {
 
         if (!res.ok) {
           const error = await res.text();
-          alert(`Error updating model: ${error}`);
+          alert(`Error updating brand: ${error}`);
           return;
         }
 
-        alert("Model updated successfully!");
+        alert("Brand updated successfully!");
         refreshModels();
-        setModelName("");
-        setModelBrandId("");
-        setSelectedModel(null);
+        setBrandName("");
+        setSelectedBrand(null);
       }
     } catch (error) {
       console.error("Submit error:", error);
@@ -153,7 +126,7 @@ export default function CreateModels() {
 
   return (
     <div className="flex flex-col justify-center items-center gap-8 my-[4%] w-screen">
-      <h1 className="text-4xl font-bold py-4">Management Model </h1>
+      <h1 className="text-4xl font-bold py-4">Management Brand </h1>
       <div>
         <form
           className="flex flex-col gap-6"
@@ -161,29 +134,14 @@ export default function CreateModels() {
         >
           <div className="flex flex-col sm:flex-row gap-6">
             <div className="flex justify-between sm:justify-normal gap-2 items-center">
-              <p className="text-2xl">Model name:</p>
+              <p className="text-2xl">Brand name:</p>
               <input
                 type="text"
                 className="border-2 border-slate-100/50 rounded p-2"
-                name="modelNmae"
-                value={modelName}
-                onChange={(e) => setModelName(e.target.value)}
-                placeholder="Model name"
-              />
-            </div>
-
-            <div className="flex justify-between sm:justify-normal gap-2 items-center">
-              <p className="text-2xl">Brand code:</p>
-              <input
-                type="text"
-                className="border-2 border-slate-100/50 rounded p-2"
-                name="brandCode"
-                value={modelBrandId === "" ? "" : modelBrandId}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setModelBrandId(value === "" ? "" : Number(value));
-                }}
-                placeholder="Brand code"
+                name="brandModel"
+                value={brandName}
+                onChange={(e) => setBrandName(e.target.value)}
+                placeholder="Brand name"
               />
             </div>
 
@@ -213,8 +171,7 @@ export default function CreateModels() {
                   checked={checked}
                   onChange={(e) => setChecked(e.target.checked)}
                   onClick={() => {
-                    setModelName("")
-                    setModelBrandId("")
+                    setBrandName("")
                   }}
                 />
                 Create a new item
@@ -225,54 +182,33 @@ export default function CreateModels() {
         </form>
       </div>
 
-      <div className="flex gap-8 w-[90%] md:w-[40%] pb-12 max-h-[600px] overflow-y-auto">
+      <div className="flex gap-8 w-[90%] md:w-[25%] pb-12 max-h-[600px] overflow-y-auto">
         {/* Models Table */}
         <table className="w-full border border-gray-300 border-collapse ">
-          <thead className="sticky top-0 text-white bg-black w-full">
+          <thead className="sticky top-0 text-white bg-black w-full text-2xl">
             <tr>
-              <th className="p-2">Model name</th>
-              <th className="p-2">Brand code</th>
-              <th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {models.map((model) => (
-              <tr key={model.id} className="odd:bg-gray-100/5">
-                <td className="p-2 text-center">{model.name}</td>
-                <td className="p-2 text-center">{model.brandId}</td>
-                <td className="flex justify-center items-center gap-4 p-2">
-                  <button
-                    className="bg-green-600 px-3 py-1 rounded text-white font-bold"
-                    onClick={() => handleEdit(model)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="bg-red-600 px-3 py-1 rounded text-white font-bold"
-                    onClick={() => handleDelete(model)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* Brands Table */}
-        <table className="w-full border border-gray-300 border-collapse">
-          <thead className="sticky top-0 bg-black text-white">
-            <tr>
-              <th className="p-2">Brand code</th>
               <th className="p-2">Brand name</th>
+              <th className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {brands.map((brand) => (
               <tr key={brand.id} className="odd:bg-gray-100/5">
-                <td className="p-2 text-center">{brand.id}</td>
                 <td className="p-2 text-center">{brand.name}</td>
-
+                <td className="flex justify-center items-center gap-8 p-2">
+                  <button
+                    className="bg-green-600 px-3 py-1 rounded text-white font-bold"
+                    onClick={() => handleEdit(brand)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="bg-red-600 px-3 py-1 rounded text-white font-bold"
+                    onClick={() => handleDelete(brand)}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
