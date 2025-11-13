@@ -157,7 +157,12 @@ function MenuBar() {
 
                             {/* Users desplegable móvil */}
                             <div className="flex flex-col gap-2">
-                                <p className="text-white font-bold">Users</p>
+                                <div className="flex gap-2">
+                                    <div className="bg-red-600 p-1 rounded-lg">
+                                        <FaUserFriends />
+                                    </div>
+                                    <p className="text-white font-bold">Users</p>
+                                </div>
                                 <Link href="/features/production/createUsers">
                                     <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
                                         Create users
