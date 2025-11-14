@@ -23,7 +23,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const updatedModel = await prisma.model.update({
     where: { id: Number(id) },
     data: {
-      id: body.id,
+      // id: body.id,
       name: body.name,
       brandId: body.brandId,
     },

@@ -6,21 +6,24 @@ import { COOKIE_NAME } from "@/constants";
 
 // GET /api/models
 export async function GET() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-
-  if (!token) {
-    return NextResponse.json({ error: "No token provided" }, { status: 401 });
-  }
-
   try {
-    verifyToken(token);
-    const models = await prisma.model.findMany()
+    const cookieStore = await cookies(); // No es async
+    const token = cookieStore.get(COOKIE_NAME)?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: "No token provided" }, { status: 401 });
+    }
+
+    verifyToken(token); // lanza si inválido
+
+    const models = await prisma.model.findMany();
     return NextResponse.json(models);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 }
+
 
 // POST /api/models
 export async function POST(request: Request) {

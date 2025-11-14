@@ -3,9 +3,8 @@
 import { FiLogOut } from "react-icons/fi";
 import { HiOutlineDownload } from "react-icons/hi";
 import { FaUserFriends } from "react-icons/fa";
-import { BsDatabaseAdd } from "react-icons/bs";
 import { TiHomeOutline } from "react-icons/ti";
-import { SiBrandfolder } from "react-icons/si";
+import { TbReportSearch } from "react-icons/tb";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
 import Link from "next/link";
@@ -17,6 +16,7 @@ function MenuBar() {
 
     const [isOpen, setIsOpen] = useState(false); // Menú hamburguesa móvil
     const [isUsersOpen, setIsUsersOpen] = useState(false); // Submenú Users en desktop
+    const [isTransactionOpen, setIsTransactionOpen] = useState(false); // Submenú Users en desktop
 
     const handleLogout = async () => {
         setUser(null);
@@ -107,23 +107,40 @@ function MenuBar() {
                                 )}
                             </li>
 
-                            <Link href="/features/production/createModels">
-                                <li className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition">
+                            {/* Submenú Transactions */}
+                            <li className="relative">
+                                <div
+                                    className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
+                                    onClick={() => setIsTransactionOpen(!isTransactionOpen)}
+                                >
                                     <div className="bg-red-600 p-1 rounded-lg">
-                                        <BsDatabaseAdd />
+                                        <TbReportSearch />
                                     </div>
-                                    Models
-                                </li>
-                            </Link>
+                                    Transactions
+                                </div>
 
-                            <Link href="/features/production/createBrands">
-                                <li className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition">
-                                    <div className="bg-red-600 p-1 rounded-lg">
-                                        <SiBrandfolder />
-                                    </div>
-                                    Brands
-                                </li>
-                            </Link>
+                                {isTransactionOpen && (
+                                    <ul className="absolute top-full left-0 bg-slate-800 text-white rounded mt-1 min-w-[150px] shadow-lg z-50">
+                                        <Link href="/features/production/createModels">
+                                            <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                                Models
+                                            </li>
+                                        </Link>
+
+                                        <Link href="/features/production/createBrands">
+                                            <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                                Brands
+                                            </li>
+                                        </Link>
+
+                                        <Link href="/features/production/manageProduction">
+                                            <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                                Production
+                                            </li>
+                                        </Link>
+                                    </ul>
+                                )}
+                            </li>
                         </>
                     )}
                 </ul>
@@ -175,23 +192,32 @@ function MenuBar() {
                                 </Link>
                             </div>
 
-                            <Link href="/features/production/createModels">
-                                <li className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition">
+                            {/* Transactions desplegable móvil */}
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-2">
                                     <div className="bg-red-600 p-1 rounded-lg">
-                                        <BsDatabaseAdd />
+                                        <TbReportSearch />
                                     </div>
-                                    Models
-                                </li>
-                            </Link>
+                                    <p className="text-white font-bold">Transactions</p>
+                                </div>
+                                <Link href="/features/production/createModels">
+                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                        Models
+                                    </li>
+                                </Link>
 
-                            <Link href="/features/production/createBrands">
-                                <li className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition">
-                                    <div className="bg-red-600 p-1 rounded-lg">
-                                        <SiBrandfolder />
-                                    </div>
-                                    Brands
-                                </li>
-                            </Link>
+                                <Link href="/features/production/createBrands">
+                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                        Brands
+                                    </li>
+                                </Link>
+
+                                <Link href="/features/production/manageProduction">
+                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                        Production
+                                    </li>
+                                </Link>
+                            </div>
                         </>
                     )}
                 </ul>
