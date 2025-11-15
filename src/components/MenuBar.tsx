@@ -147,9 +147,14 @@ function MenuBar() {
             </div>
 
             {/* Menu móvil desplegable */}
-            {isOpen && (
-                <ul className="sm:hidden flex flex-col gap-4 px-4 pb-4 text-white">
+            <div
+                className={`
+                    sm:hidden overflow-hidden transition-all duration-300 ease-in-out
+                    ${isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
+            >
+                <ul className="flex flex-col gap-4 px-4 pb-4 text-white pt-4">
                     <li>{user?.name ? `Welcome, ${user.name}` : "No hay usuario"}</li>
+
                     <li
                         className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
                         onClick={handleLogout}
@@ -166,13 +171,16 @@ function MenuBar() {
                                 className="flex items-center gap-2 cursor-pointer hover:text-slate-200 transition"
                                 onClick={() => window.open("/api/export", "_blank")}
                             >
-                                <div className="bg-red-600 p-1 rounded-lg">
+                                <div
+                                    className="bg-red-600 p-1 rounded-lg"
+                                    onClick={() => setIsOpen(false)}
+                                >
                                     <HiOutlineDownload />
                                 </div>
                                 Download
                             </li>
 
-                            {/* Users desplegable móvil */}
+                            {/* Users */}
                             <div className="flex flex-col gap-2">
                                 <div className="flex gap-2">
                                     <div className="bg-red-600 p-1 rounded-lg">
@@ -180,19 +188,27 @@ function MenuBar() {
                                     </div>
                                     <p className="text-white font-bold">Users</p>
                                 </div>
+
                                 <Link href="/features/production/createUsers">
-                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                    <li
+                                        className="px-4 py-2 hover:bg-slate-700 cursor-pointer"
+                                        onClick={() => setIsOpen(false)}
+                                    >
                                         Create users
                                     </li>
                                 </Link>
+
                                 <Link href="/features/production/editDeleteUsers">
-                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                    <li
+                                        className="px-4 py-2 hover:bg-slate-700 cursor-pointer"
+                                        onClick={() => setIsOpen(false)}
+                                    >
                                         Modify users
                                     </li>
                                 </Link>
                             </div>
 
-                            {/* Transactions desplegable móvil */}
+                            {/* Transactions */}
                             <div className="flex flex-col gap-2">
                                 <div className="flex gap-2">
                                     <div className="bg-red-600 p-1 rounded-lg">
@@ -200,20 +216,30 @@ function MenuBar() {
                                     </div>
                                     <p className="text-white font-bold">Transactions</p>
                                 </div>
+
                                 <Link href="/features/production/createModels">
-                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                    <li
+                                        className="px-4 py-2 hover:bg-slate-700 cursor-pointer"
+                                        onClick={() => setIsOpen(false)}
+                                    >
                                         Models
                                     </li>
                                 </Link>
 
                                 <Link href="/features/production/createBrands">
-                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                    <li
+                                        className="px-4 py-2 hover:bg-slate-700 cursor-pointer"
+                                        onClick={() => setIsOpen(false)}
+                                    >
                                         Brands
                                     </li>
                                 </Link>
 
                                 <Link href="/features/production/manageProduction">
-                                    <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                    <li
+                                        className="px-4 py-2 hover:bg-slate-700 cursor-pointer"
+                                        onClick={() => setIsOpen(false)}
+                                    >
                                         Production
                                     </li>
                                 </Link>
@@ -221,7 +247,8 @@ function MenuBar() {
                         </>
                     )}
                 </ul>
-            )}
+            </div>
+
         </div>
     );
 }

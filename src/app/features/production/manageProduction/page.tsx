@@ -212,7 +212,7 @@ export default function ManageProduction() {
                 </form>
             </div>
 
-            <div className="flex gap-8 w-[90%] md:w-[45%] pb-12 max-h-[600px] overflow-y-auto">
+            <div className="flex gap-8 w-[90%] md:w-[65%] pb-12 max-h-[600px] overflow-y-auto">
                 {/* Models Table */}
                 <table className="w-full border border-gray-300 border-collapse ">
                     <thead className="sticky top-0 text-white bg-black w-full text-2xl">
