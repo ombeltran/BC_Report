@@ -1,10 +1,10 @@
 import { prisma } from "@/libs/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { verifyToken } from "@/utils/jwt";
 import { cookies } from "next/headers";
 import { COOKIE_NAME } from "@/constants";
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(_request: NextRequest, context: { params: Promise<{ id: string }> }) {
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -17,14 +17,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const id = params.id
-    const body = await request.json();
+    const id = await context.params.id
+    const body = await _request.json();
 
 
     const updatedProduction = await prisma.production.update({
         where: { id: Number(id) },
         data: {
-            id: body.id,
             brand: body.brand,
             model: body.model,
             seria_N: body.seria_N,
@@ -37,7 +36,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: NextRequest, context: { params: Promise<{ id: string }> }) {
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -50,7 +49,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
     const deletedProduction = await prisma.production.delete({ where: { id: Number(id) } });
 
     return NextResponse.json(deletedProduction);

@@ -1,24 +1,13 @@
 import { prisma } from "@/libs/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { hashPassword, comparePassword } from "@/utils/bcrypt";
 import { verifyToken } from "@/utils/jwt";
 import { cookies } from "next/headers";
 import { COOKIE_NAME } from "@/constants";
 
-// type Context = { params: { id: string } };
 
-// async function authenticate(request: Request) {
-//   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-//   if (!token) throw new Error("No token provided");
-  
-//   const payload = verifyToken(token);
-//   if (!payload) throw new Error("Invalid token");
-  
-//   return payload;
-// }
-
-export async function GET(request: Request, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function GET(_request: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const user = await prisma.user.findUnique({
     where: {
       id: Number(id)
@@ -29,7 +18,7 @@ export async function GET(request: Request, context: { params: { id: string } })
 }
 
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(_request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -42,8 +31,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const { id } = params;
-  const body = await request.json();
+  const { id } = await context.params;
+  const body = await _request.json();
 
   const updatedUser = await prisma.user.update({
     where: { id: Number(id) },
@@ -60,7 +49,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -73,7 +62,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await context.params;
   const deletedUser = await prisma.user.delete({ where: { id: Number(id) } });
 
   return NextResponse.json({ message: "User deleted", user: deletedUser });

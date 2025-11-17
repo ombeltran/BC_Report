@@ -8,6 +8,7 @@ type ProductionData = {
     model: string;
     seria_N: string;
     category: string;
+    note: string;
     userId: string;
 };
 
@@ -221,6 +222,7 @@ export default function ManageProduction() {
                             <th className="p-2">Model</th>
                             <th className="p-2">Serial N</th>
                             <th className="p-2">Category</th>
+                            <th className="p-2">Note</th>
                             <th className="p-2">user Id</th>
                             <th className="p-2">Actions</th>
                         </tr>
@@ -234,6 +236,7 @@ export default function ManageProduction() {
                                     <td className="p-2 text-center">{prod.model}</td>
                                     <td className="p-2 text-center">{prod.seria_N}</td>
                                     <td className="p-2 text-center">{prod.category}</td>
+                                    <td className="p-2 text-center">{prod.note}</td>
                                     <td className="p-2 text-center">{prod.userId}</td>
                                     <td className="flex justify-center items-center gap-8 p-2">
                                         <button
