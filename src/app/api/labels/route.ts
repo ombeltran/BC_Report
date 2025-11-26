@@ -27,18 +27,29 @@ export async function GET() {
 // POST /api/labels
 export async function POST(request: Request) {
     try {
-        const { brand, model, seria_N, upc, qty } = await request.json()
+        const body = await request.json(); 
+        const { brand, model, seria_N, upc, userId, qty } = body;
 
         // Validate fields
         if (!brand) { return NextResponse.json({ error: "Brand field is required" }, { status: 400 }); }
         if (!model) { return NextResponse.json({ error: "Model field is required" }, { status: 400 }); }
         if (!seria_N) { return NextResponse.json({ error: "Serial number field is required" }, { status: 400 }); }
         if (!upc) { return NextResponse.json({ error: "UPC field is required" }, { status: 400 }); }
+        if (!userId) { return NextResponse.json({ error: "userId field is required" }, { status: 400 }); }
         if (!qty) { return NextResponse.json({ error: "Quantity field is required" }, { status: 400 }); }
 
         // Create label
-        const data = await request.json();
-        const newLabel = await prisma.labels.create({data});
+        // Create label
+        const newLabel = await prisma.labels.create({
+            data: {
+                brand,
+                model,
+                seria_N,
+                upc,
+                userId,
+                qty: qty,
+            },
+        });
 
         return NextResponse.json({ message: "Label created successful", newLabel }, { status: 201 });
     } catch (err) {

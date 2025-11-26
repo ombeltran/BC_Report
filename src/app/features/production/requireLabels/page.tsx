@@ -1,10 +1,106 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/context/userContext";
 
 function requireLabels() {
+  interface Brand { id: number; name: string; }
+  interface Model { id: number; name: string; brandId: number; }
+  interface Label {
+    id: number;
+    brand: string;
+    model: string;
+    seria_N: string;
+    upc: string;
+    qty: number;
+    userId: number;
+    complete: boolean;
+    rejected: boolean;
+    submittedAt: string;
+  }
+
   const [clickStatus, setClickStatus] = useState<string>("Sent");
   const { user } = useUser();
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<string>("");
+  const [alertForm, setAlertForm] = useState<string>("");
+
+  // This useEffect handles the alert form visibility into teh form when de user no fill some form field
+  useEffect(() => {
+    if (alertForm) {
+      const timer = setTimeout(() => {
+        setAlertForm("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [alertForm]);
+
+  //Allow match models and brand
+  const filteredModels = models.filter(
+    (model) =>
+      brands.find((b) => b.name === selectedBrand)?.id === model.brandId
+  );
+
+  // Fetch brands from API
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const res = await fetch("/api/brands", {
+          method: "GET",
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        setBrands(data);
+        // console.log("Brands:", data);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    }
+    fetchBrands();
+  }, []);
+
+  // Fetch models from API
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const res = await fetch("/api/models", {
+          method: "GET",
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        setModels(data);
+        // console.log("Models:", data);
+      } catch (error) {
+        console.error("Error fetching models:", error);
+      }
+    }
+    fetchModels();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchLabels = async () => {
+      try {
+        const res = await fetch("/api/labels", {
+          method: "GET",
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        setLabels(data);
+      } catch (error) {
+        console.error("Error fetching labels:", error);
+      }
+    }
+    fetchLabels();
+  }, [])
 
 
   const handleLabelList = (status: string) => {
@@ -15,28 +111,45 @@ function requireLabels() {
     e.preventDefault();
     const form = e.currentTarget;
 
+    //Process that ensure the brand, model, and category are selected from the list
+    const brandValue = form.brand.value.trim();
+    const modelValue = form.model.value.trim();
+
+    const validBrand = brands.some(b => b.name === brandValue);
+    const validModel = filteredModels.some(m => m.name === modelValue);
+
+    if (!validBrand) {
+      setAlertForm("The brand must be selected from the list.");
+      return;
+    }
+
+    if (!validModel) {
+      setAlertForm("The model must be selected from the list.");
+      return;
+    }
+
     const newLabelData = {
       brand: form.brand.value,
       model: form.model.value,
       serialN: form.serialN.value,
       upc: form.upc.value,
-      id: user ? user.id : null,
+      userId: user ? user.id : null,
       qty: form.qty.value,
     };
 
     // console.log(newLabelData);
-    
+
     try {
-      const res = await fetch("/api/production", {
+      const res = await fetch("/api/labels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           brand: newLabelData.brand,
           model: newLabelData.model,
-          seria_N: newLabelData.serialN,
+          seria_N: newLabelData.serialN.toUpperCase(),
           upc: newLabelData.upc,
-          id: newLabelData.id,
+          userId: newLabelData.userId,
           qty: newLabelData.qty,
         }),
       });
@@ -45,7 +158,11 @@ function requireLabels() {
         throw new Error(`Label with error: ${res.status}`);
       }
 
+      const createdLabel = await res.json(); // API return object created
+      setLabels(prev => [...prev, createdLabel]); // Add new label to labels state
+
       form.reset();
+      setSelectedBrand("");
       alert("Label created successful");
     } catch (error) {
       console.error("Something is wrong meanwhile send the form:", error);
@@ -64,56 +181,84 @@ function requireLabels() {
           onSubmit={handleSubmit}
         >
           <h3 className="font-bold text-2xl">Enter New Labels Details</h3>
+
+          {/* Brand field */}
           <div className="flex flex-col gap-3">
             <label htmlFor="brand">Brand:</label>
+            <datalist id="brands" >
+              {
+                brands.map((brand) => (
+                  <option key={brand.id} value={brand.name as string} className="text-black">{brand.name}</option>
+                ))
+              }
+            </datalist>
             <input
-              type="text"
+              className="border-2 border-slate-100/50 rounded p-2 "
+              list="brands"
               id="brand"
-              placeholder="Enter brand name"
-              className="border-2 border-slate-100/50 rounded p-2"
+              name="brand"
+              placeholder="Select or type a brand"
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
             />
           </div>
 
+          {/* Model field */}
           <div className="flex flex-col gap-3">
             <label htmlFor="model">Model:</label>
+            <datalist id="models" >
+              {
+                filteredModels.map((model) => (
+                  <option key={model.id} value={model.name as string} className="text-black">{model.name}</option>
+                ))
+              }
+            </datalist>
             <input
-              type="text"
+              className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
+              list="models"
               id="model"
-              placeholder="Enter model number"
-              className="border-2 border-slate-100/50 rounded p-2"
+              name="model"
+              placeholder="Select or type a model"
             />
           </div>
 
+          {/* Serial Number field */}
           <div className="flex flex-col gap-3">
             <label htmlFor="serialN">Serial Number:</label>
             <input
               type="text"
               id="serialN"
+              name="serialN"
               placeholder="Enter serial number"
               className="border-2 border-slate-100/50 rounded p-2"
             />
           </div>
 
+          {/* UPC field */}
           <div className="flex flex-col gap-3">
             <label htmlFor="upc">UPC:</label>
             <input
-              type="text"
+              type="number"
               id="upc"
+              name="upc"
               placeholder="Enter 12-digit UPC"
               className="border-2 border-slate-100/50 rounded p-2"
             />
           </div>
 
+          {/* Quantity field */}
           <div className="flex flex-col gap-3">
             <label htmlFor="qty">Quantity:</label>
             <input
-              type="text"
+              type="number"
               id="qty"
+              name="qty"
               placeholder="Enter quantity"
               className="border-2 border-slate-100/50 rounded p-2"
             />
           </div>
 
+          {/* Button Submit */}
           <div className="flex justify-end pt-3">
             <button
               type="submit"
@@ -126,13 +271,13 @@ function requireLabels() {
         </form>
 
         {/* List of information sent */}
-        <div className="border-2 border-white rounded p-8 flex flex-col gap-4 min-h-[550px]">
+        <div className="border-2 border-white rounded p-8 flex flex-col gap-4 min-h-[550px] w-[850px]">
           <div className="flex gap-10">
             <button
               onClick={() => handleLabelList("Sent")}
               className={clickStatus === "Sent" ? "font-bold underline underline-offset-8 text-green-600 cursor-pointer" : "cursor-pointer"}
             >
-              Sent (2)
+              Sent
             </button>
             <button
               onClick={() => handleLabelList("Rejected")}
@@ -141,33 +286,64 @@ function requireLabels() {
               Rejected
             </button>
           </div>
-          <table>
+          <table className="min-w-full border-collapse text-sm">
             <thead>
-              <tr>
-                <th className="px-4 py-3 font-medium" scope="col">Brand</th>
-                <th className="px-4 py-3 font-medium" scope="col">Model</th>
-                <th className="px-4 py-3 font-medium" scope="col">Serial Number</th>
-                <th className="ml-12 px-4 py-3 font-medium" scope="col">UPC</th>
-                <th className="ml-12 px-4 py-3 font-medium" scope="col">Qty</th>
-                <th className="ml-12 px-4 py-3 font-medium" scope="col">Status</th>
+              <tr className="text-xl">
+                <th className="px-4 py-3 font-medium text-left" scope="col">Brand</th>
+                <th className="px-4 py-3 font-medium text-left" scope="col">Model</th>
+                <th className="px-4 py-3 font-medium text-left" scope="col">Serial Number</th>
+                <th className="px-4 py-3 font-medium text-left" scope="col">UPC</th>
+                <th className="px-4 py-3 font-medium text-left" scope="col">Qty</th>
+                <th className="px-4 py-3 font-medium text-left" scope="col">Status</th>
+                <th className="px-4 py-3 font-medium text-left" scope="col">Date</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-slate-100/50 hover:bg-gray-100/10">
-                <td className="px-4 py-3">TechCore</td>
-                <td className="px-4 py-3">X-Pro 5000</td>
-                <td className="px-4 py-3">SN987654321</td>
-                <td className="px-4 py-3">123456789012</td>
-                <td className="px-4 py-3">2</td>
-                <td className="px-4 py-3">Pending</td>
-                {/* Printed is the other option*/}
-              </tr>
+              {labels
+                .filter(label => {
+                  // Only user current
+                  if (label.userId !== user?.id) return false;
+                  // Filtrar by clickStatus
+                  if (clickStatus === "Sent") {
+                    // Show only pendings
+                    return label.complete === false && label.rejected === false;
+                  } else if (clickStatus === "Rejected") {
+                    // Show only rejected
+                    return label.rejected === true;
+                  }
+
+                  return false;
+                })
+                .slice(-10) // Show only last 10 records
+                .map(label => (
+                  <tr key={label.id} className="border-b border-slate-100/50 hover:bg-gray-100/10">
+                    <td className="px-4 py-3 text-left">{label.brand}</td>
+                    <td className="px-4 py-3 text-left">{label.model}</td>
+                    <td className="px-4 py-3 text-left">{label.seria_N}</td>
+                    <td className="px-4 py-3 text-left">{label.upc}</td>
+                    <td className="px-4 py-3 text-center">{label.qty}</td>
+                    <td className="px-4 py-3 text-left">
+                      {label.complete === false && label.rejected === false
+                        ? "Pending"
+                        : label.rejected === true
+                          ? "Rejected"
+                          : "Completed"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {new Date(label.submittedAt).toLocaleDateString('es-CO')}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
-
       </div>
 
+      {alertForm && (
+        <div className="flex justify-center mt-5 text-2xl text-red-500 font-bold mb-4">
+          {alertForm}
+        </div>
+      )}
     </div>
   )
 }
