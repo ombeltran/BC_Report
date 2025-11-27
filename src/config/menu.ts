@@ -11,11 +11,12 @@ export interface MenuItem {
   path: string;
   icon?: React.ComponentType;
   children?: MenuItem[];
+  description?: string;
 }
 
 export const AppMenu: Record<string, MenuItem> = {
-  home: { label: "Home", path: "/features/production", icon: TiHomeOutline },
-  productivity: { label: "Productivity", path: "/features/production/productionReport" , icon: TbReportSearch},
+  home: { label: "Home", path: "/features/home", icon: TiHomeOutline },
+  productivity: { label: "Productivity", path: "/features/production/productionReport" , icon: TbReportSearch, description: "View productivity reports and statistics" },
   users: {
     label: "Users",
     path: "#",
@@ -24,6 +25,7 @@ export const AppMenu: Record<string, MenuItem> = {
       { label: "Create User", path: "/features/production/createUsers" },
       { label: "Modify User", path: "/features/production/editDeleteUsers"},
     ],
+    description: "Manage application users and their roles",
   },
   transactions: {
     label: "Transactions",
@@ -34,6 +36,7 @@ export const AppMenu: Record<string, MenuItem> = {
       { label: "Brands", path: "/features/production/createBrands" },
       { label: "Production", path: "/features/production/manageProduction" },
     ],
+    description: "Manage production-related transactions",
   },
   labels:{
     label: "Labels",
@@ -43,9 +46,10 @@ export const AppMenu: Record<string, MenuItem> = {
       {label: "Require Labels", path: "/features/production/requireLabels"},
       {label: "Manage Labels", path: "/features/production/manageLabels"},
     ],
+    description: "Manage label requirements to identify products",
   },
   logout: { label: "Logout", path: "/", icon: FiLogOut },
-  download: { label: "Download", path: "/api/export", icon: HiOutlineDownload },
+  download: { label: "Download", path: "/api/export", icon: HiOutlineDownload, description: "Download production reports in Excel format" },
 
   // This options are repeated for roles that use it alone one option
   reqLabels: { label: "Require labels", path: "/features/production/requireLabels", icon: HiOutlineIdentification },

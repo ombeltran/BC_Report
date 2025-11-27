@@ -33,7 +33,7 @@ function Login() {
 
       form.reset();
 
-      router.push("/features/production");
+      router.push("/features/home");
     } else {
       // console.error("Error en login:", data.error);
       alert("Your user name or your password are wrong. Please try again");

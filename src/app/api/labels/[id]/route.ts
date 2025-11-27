@@ -19,12 +19,8 @@ export async function PUT(_request: NextRequest, context: { params: Promise<{ id
   const updatedLabel = await prisma.labels.update({
     where: { id: Number(id) },
     data: {
-      brand: body.brand,
-      model: body.model,
-      seria_N: body.seria_N,
-      upc: body.upc,
-      userId: body.userId,
-      qty: body.qty,
+      complete: body.complete,
+      rejected: body.rejected,
     },
   });
 

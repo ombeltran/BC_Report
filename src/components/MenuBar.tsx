@@ -35,7 +35,7 @@ export default function MenuBar() {
             <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-4 sm:px-6">
                 {/* Home a la izquierda */}
                 <div className="flex items-center gap-2">
-                    <Link href={menuItems[0]?.path || "/"} className=" flex gap-3 font-bold">
+                    <Link href={menuItems[0]?.path} className=" flex gap-3 font-bold">
                         <div className="bg-red-600 p-1 rounded-2xl text-xl">
                             {menuItems[0]?.icon && (() => {
                                 const HomeIcon = menuItems[0].icon;

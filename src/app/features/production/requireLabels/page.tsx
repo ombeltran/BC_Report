@@ -170,11 +170,21 @@ function requireLabels() {
     }
   }
 
+  //This function count the pending and rejected labels for the user
+  const pendingCount = labels.filter(
+    l => l.userId === user?.id && l.complete === false && l.rejected === false
+  ).length;
+
+  const rejectedCount = labels.filter(
+    l => l.userId === user?.id && l.rejected === true
+  ).length;
+
+
   return (
     <div>
-      <h1 className="flex justify-center text-5xl font-bold mt-[4%]">Report New Labels</h1>
+      <h1 className="flex justify-center text-5xl text-center font-bold mt-[4%]">Report New Labels</h1>
 
-      <div className="flex justify-center items-center mt-[5.5%] gap-4">
+      <div className="flex sm:flex-row flex-col justify-center items-center mt-[5.5%] gap-4">
         {/* Form to input new label details */}
         <form
           className="border-2 border-white rounded p-8 flex flex-col gap-4 min-h-[550px]"
@@ -271,71 +281,73 @@ function requireLabels() {
         </form>
 
         {/* List of information sent */}
-        <div className="border-2 border-white rounded p-8 flex flex-col gap-4 min-h-[550px] w-[850px]">
+        <div className="border-2 border-white rounded p-4 flex flex-col gap-4 min-h-[550px] w-full max-w-[850px]">
           <div className="flex gap-10">
             <button
               onClick={() => handleLabelList("Sent")}
               className={clickStatus === "Sent" ? "font-bold underline underline-offset-8 text-green-600 cursor-pointer" : "cursor-pointer"}
             >
-              Sent
+              Sent ({pendingCount})
             </button>
             <button
               onClick={() => handleLabelList("Rejected")}
               className={clickStatus === "Rejected" ? "font-bold underline underline-offset-8 text-green-600 cursor-pointer" : "cursor-pointer"}
             >
-              Rejected
+              Rejected ({rejectedCount})
             </button>
           </div>
-          <table className="min-w-full border-collapse text-sm">
-            <thead>
-              <tr className="text-xl">
-                <th className="px-4 py-3 font-medium text-left" scope="col">Brand</th>
-                <th className="px-4 py-3 font-medium text-left" scope="col">Model</th>
-                <th className="px-4 py-3 font-medium text-left" scope="col">Serial Number</th>
-                <th className="px-4 py-3 font-medium text-left" scope="col">UPC</th>
-                <th className="px-4 py-3 font-medium text-left" scope="col">Qty</th>
-                <th className="px-4 py-3 font-medium text-left" scope="col">Status</th>
-                <th className="px-4 py-3 font-medium text-left" scope="col">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {labels
-                .filter(label => {
-                  // Only user current
-                  if (label.userId !== user?.id) return false;
-                  // Filtrar by clickStatus
-                  if (clickStatus === "Sent") {
-                    // Show only pendings
-                    return label.complete === false && label.rejected === false;
-                  } else if (clickStatus === "Rejected") {
-                    // Show only rejected
-                    return label.rejected === true;
-                  }
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-collapse text-sm">
+              <thead>
+                <tr className="text-xl">
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base font-medium" scope="col">Brand</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base font-medium" scope="col">Model</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base font-medium" scope="col">Serial Number</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base font-medium" scope="col">UPC</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base font-medium" scope="col">Qty</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base font-medium" scope="col">Status</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base font-medium" scope="col">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {labels
+                  .filter(label => {
+                    // Only user current
+                    if (label.userId !== user?.id) return false;
+                    // Filtrar by clickStatus
+                    if (clickStatus === "Sent") {
+                      // Show only pendings
+                      return label.complete === false && label.rejected === false;
+                    } else if (clickStatus === "Rejected") {
+                      // Show only rejected
+                      return label.rejected === true;
+                    }
 
-                  return false;
-                })
-                .slice(-10) // Show only last 10 records
-                .map(label => (
-                  <tr key={label.id} className="border-b border-slate-100/50 hover:bg-gray-100/10">
-                    <td className="px-4 py-3 text-left">{label.brand}</td>
-                    <td className="px-4 py-3 text-left">{label.model}</td>
-                    <td className="px-4 py-3 text-left">{label.seria_N}</td>
-                    <td className="px-4 py-3 text-left">{label.upc}</td>
-                    <td className="px-4 py-3 text-center">{label.qty}</td>
-                    <td className="px-4 py-3 text-left">
-                      {label.complete === false && label.rejected === false
-                        ? "Pending"
-                        : label.rejected === true
-                          ? "Rejected"
-                          : "Completed"}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {new Date(label.submittedAt).toLocaleDateString('es-CO')}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+                    return false;
+                  })
+                  .slice(-10) // Show only last 10 records
+                  .map(label => (
+                    <tr key={label.id} className="border-b border-slate-100/50 hover:bg-gray-100/10">
+                      <td className="px-4 py-3 text-left">{label.brand}</td>
+                      <td className="px-4 py-3 text-left">{label.model}</td>
+                      <td className="px-4 py-3 text-left">{label.seria_N}</td>
+                      <td className="px-4 py-3 text-left">{label.upc}</td>
+                      <td className="px-4 py-3 text-center">{label.qty}</td>
+                      <td className="px-4 py-3 text-left">
+                        {label.complete === false && label.rejected === false
+                          ? "Pending"
+                          : label.rejected === true
+                            ? "Rejected"
+                            : "Completed"}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {new Date(label.submittedAt).toLocaleDateString('es-CO')}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
