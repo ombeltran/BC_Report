@@ -19,7 +19,7 @@ function Home() {
             <h1 className="mb-[10%] text-center text-7xl">{`Welcome, ${user.name} ${user.lastName}!`}</h1>
             <div className="flex items-center w-[calc(100%-12rem)] gap-12 flex-wrap justify-center">
                 {menuItems.slice(1).map(item => (
-                    (item.label !== "Logout" &&
+                    ((item.label !== "Logout" && item.label !== "Download") &&
                         <Link key={item.label} href={item.path}>
                             <div
                                 className="flex flex-col gap-3 p-4 bg-slate-300/70 h-[280px] w-[320px] rounded-md mt-4 text-black font-bold cursor-pointer hover:bg-slate-300/90 hover:shadow-lg hover:scale-105 transition-all"

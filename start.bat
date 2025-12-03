@@ -3,9 +3,9 @@ REM ============================
 REM Start Script for Production (Universal)
 REM ============================
 
-echo ========================================
-echo Iniciando aplicación en modo PRODUCCION
-echo ========================================
+echo ===========================================
+echo Starting the application in PRODUCTION mode
+echo ===========================================
 
 REM Ruta absoluta del proyecto (ajústala si cambias de carpeta)
 SET PROJECT_DIR=%~dp0

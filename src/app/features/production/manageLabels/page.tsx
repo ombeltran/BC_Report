@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
+import { FiRefreshCcw } from "react-icons/fi";
 
 function manageLabels() {
   interface Label {
@@ -58,6 +59,7 @@ function manageLabels() {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       const data = await res.json();
+
       setUsers(data);
     } catch (error) {
       console.error("Error fetching labels:", error);
@@ -81,6 +83,16 @@ function manageLabels() {
     // Find user name and assign to requiredBy state
     const user = users.find(u => u.id === item.userId);
     setRequiredBy(`${user?.name || ""} ${user?.lastName || ""}`);
+  }
+
+  const handleReset = () => {
+    setBrand("");
+    setModel("");
+    setSerialN("");
+    setUpc("");
+    setQty("");
+    setXDate("");
+    setRequiredBy("");
   }
 
   const handleActionClick = async (action: string) => {
@@ -115,12 +127,28 @@ function manageLabels() {
     }
   };
 
+  const pendingCount = labels.filter(
+    l => l.complete === false && l.rejected === false
+  ).length;
+
   return (
-    <div className="flex flex-col sm:flex-row justify-center">
+    <div className="flex flex-col sm:flex-row justify-center mb-14">
       {/* List of label pending for print */}
-      <div className="p-12 sm:mt-12">
-        <h2 className="py-8 text-3xl font-bold">Pending Request (4)</h2>
-        <p className="pb-8">Select a request to view details and take action</p>
+      <div className="p-12 sm:mt-8">
+        <div className="flex justify-center  items-center gap-4 pb-3">
+          <h2 className="py-8 text-3xl font-bold">Pending Request ({pendingCount})</h2>
+          <div
+            onClick={() => fetchLabels()}
+            className="cursor-pointer"
+          >
+            <FiRefreshCcw
+              className="text-3xl"
+            />
+          </div>
+        </div>
+
+        <p className="pb-2">Select a request to view details and take action</p>
+
         <div className="flex flex-col gap-6">
           <div
             className="flex flex-col gap-6 p-6 h-[500px] overflow-y-auto"
@@ -159,13 +187,13 @@ function manageLabels() {
       </div>
 
       {/* Detail of selected request */}
-      <div className="border-2 sm:mt-32 px-4 sm:py-0 py-4 border-white overflow-x-auto">
+      <div className="border-2 sm:mt-48 px-4 sm:py-0 py-4 border-white overflow-x-auto">
         <div className="border-b border-slate-100/50">
           <h2 className="px-12 pt-4 text-4xl">{brand}</h2>
           <p className="px-12">Request detail</p>
         </div>
 
-        <form className="flex flex-col justify-between sm:h-[80%] h-[450px]">
+        <form className="flex flex-col justify-between sm:h-[60%] h-[450px]">
           <div>
             <div className="flex gap-6 mt-6">
               <div className="flex flex-col gap3">
@@ -212,17 +240,17 @@ function manageLabels() {
             </div>
           </div>
 
-          <div className="flex justify-between gap-4 p-2">
+          <div className="flex justify-between gap-4 p-2 mt-6">
             <button
               className="flex justify-center items-center gap-2 bg-green-600 py-2 px-4 rounded-xl font-semibold w-[50%]"
-              onClick={(e) => { e.preventDefault(); handleActionClick("completed"); }}
+              onClick={(e) => { e.preventDefault(); handleActionClick("completed"); handleReset(); }}
             >
               <FaRegCheckCircle className="text-xl" />
               Marck as completed
             </button>
             <button
               className="flex justify-center items-center gap-2 bg-red-600 py-2 px-4 rounded-xl font-semibold w-[50%]"
-              onClick={(e) => { e.preventDefault(); handleActionClick("rejected"); }}
+              onClick={(e) => { e.preventDefault(); handleActionClick("rejected"); handleReset(); }}
             >
               <MdOutlineCancel className="text-2xl" />
               Marck as rejected

@@ -83,22 +83,21 @@ function requireLabels() {
     fetchModels();
   }, []);
 
-
-  useEffect(() => {
-    const fetchLabels = async () => {
-      try {
-        const res = await fetch("/api/labels", {
-          method: "GET",
-        });
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        const data = await res.json();
-        setLabels(data);
-      } catch (error) {
-        console.error("Error fetching labels:", error);
+  const fetchLabels = async () => {
+    try {
+      const res = await fetch("/api/labels", {
+        method: "GET",
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
+      const data = await res.json();
+      setLabels(data);
+    } catch (error) {
+      console.error("Error fetching labels:", error);
     }
+  }
+  useEffect(() => {
     fetchLabels();
   }, [])
 
@@ -158,8 +157,9 @@ function requireLabels() {
         throw new Error(`Label with error: ${res.status}`);
       }
 
-      const createdLabel = await res.json(); // API return object created
-      setLabels(prev => [...prev, createdLabel]); // Add new label to labels state
+      // const createdLabel = await res.json();
+      // setLabels(prev => [...prev, { ...createdLabel, submittedAt: new Date().toISOString() }]);
+      await fetchLabels();
 
       form.reset();
       setSelectedBrand("");
