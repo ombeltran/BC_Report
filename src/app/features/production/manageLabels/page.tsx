@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { FiRefreshCcw } from "react-icons/fi";
-import Barcode from "@/components/Barcode";
-import { DiVim } from "react-icons/di";
+import { useRouter } from "next/navigation";
 
 function manageLabels() {
   interface Label {
@@ -36,7 +35,8 @@ function manageLabels() {
   const [requiredBy, setRequiredBy] = useState<string>("");
   const [labels, setLabels] = useState<Label[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [barCode, setBarCode] = useState<boolean>(false);
+  // const [barCode, setBarCode] = useState<boolean>(false);
+  const router = useRouter();
 
   const fetchLabels = async () => {
     try {
@@ -235,21 +235,22 @@ function manageLabels() {
               </div>
             </div>
 
-            <div className="flex gap-6 mt-6">
+            <div className="flex justify-between gap-2 mt-6">
               <div className="flex flex-col gap3">
                 <label htmlFor="xdate" className="text-slate-100/50">Date Submitted</label>
                 <input type="text" id="xdate" className="text-xl" value={xDate} readOnly />
               </div>
-            </div>
-            <button 
-              className="bg-red-600 py-2 px-4 rounded-xl font-semibold w-[50%] cursor-pointer"
-              onClick={()=>setBarCode(true)}
+
+              <button
+                className="bg-red-600 h-10 px-4 rounded-xl font-semibold w-[48%] cursor-pointer"
+                onClick={() => router.push("/features/production/printLabels")}
               >
                 Print label
-            </button>
+              </button>
+            </div>
           </div>
 
-          <div className="flex justify-between gap-4 p-2 mt-6">
+          <div className="flex justify-between gap-4 py-2 mt-6">
             <button
               className="flex justify-center items-center gap-2 bg-green-600 py-2 px-4 rounded-xl font-semibold w-[50%] cursor-pointer"
               onClick={(e) => {
@@ -271,17 +272,6 @@ function manageLabels() {
           </div>
         </form>
       </div>
-      {
-        barCode &&
-        <div className="absolute flex flex-col items-center justify-center gap-4 top-[30%] left-[35%] h-full w-full px-12 bg-white">
-          <div className="flex justify-center border-2 border-black w-full">
-            <Barcode value="840133997804" />
-          </div>
-          <div className="flex justify-center border-2 border-black w-full">
-            <Barcode value="NFRC871056116D0121" />
-          </div>
-        </div>
-      }
     </div>
   )
 }
