@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { FiRefreshCcw } from "react-icons/fi";
+import Barcode from "@/components/Barcode";
+import { DiVim } from "react-icons/di";
 
 function manageLabels() {
   interface Label {
@@ -34,6 +36,7 @@ function manageLabels() {
   const [requiredBy, setRequiredBy] = useState<string>("");
   const [labels, setLabels] = useState<Label[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [barCode, setBarCode] = useState<boolean>(false);
 
   const fetchLabels = async () => {
     try {
@@ -238,18 +241,28 @@ function manageLabels() {
                 <input type="text" id="xdate" className="text-xl" value={xDate} readOnly />
               </div>
             </div>
+            <button 
+              className="bg-red-600 py-2 px-4 rounded-xl font-semibold w-[50%] cursor-pointer"
+              onClick={()=>setBarCode(true)}
+              >
+                Print label
+            </button>
           </div>
 
           <div className="flex justify-between gap-4 p-2 mt-6">
             <button
-              className="flex justify-center items-center gap-2 bg-green-600 py-2 px-4 rounded-xl font-semibold w-[50%]"
-              onClick={(e) => { e.preventDefault(); handleActionClick("completed"); handleReset(); }}
+              className="flex justify-center items-center gap-2 bg-green-600 py-2 px-4 rounded-xl font-semibold w-[50%] cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                handleActionClick("completed");
+                handleReset();
+              }}
             >
               <FaRegCheckCircle className="text-xl" />
               Marck as completed
             </button>
             <button
-              className="flex justify-center items-center gap-2 bg-red-600 py-2 px-4 rounded-xl font-semibold w-[50%]"
+              className="flex justify-center items-center gap-2 bg-red-600 py-2 px-4 rounded-xl font-semibold w-[50%] cursor-pointer"
               onClick={(e) => { e.preventDefault(); handleActionClick("rejected"); handleReset(); }}
             >
               <MdOutlineCancel className="text-2xl" />
@@ -258,6 +271,17 @@ function manageLabels() {
           </div>
         </form>
       </div>
+      {
+        barCode &&
+        <div className="absolute flex flex-col items-center justify-center gap-4 top-[30%] left-[35%] h-full w-full px-12 bg-white">
+          <div className="flex justify-center border-2 border-black w-full">
+            <Barcode value="840133997804" />
+          </div>
+          <div className="flex justify-center border-2 border-black w-full">
+            <Barcode value="NFRC871056116D0121" />
+          </div>
+        </div>
+      }
     </div>
   )
 }

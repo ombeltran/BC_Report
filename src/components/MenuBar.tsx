@@ -31,7 +31,7 @@ export default function MenuBar() {
     };
 
     return (
-        <nav className="bg-slate-800/25 border-b-4 border-slate-800/5 shadow-[0_6px_12px_-6px_rgba(255,255,255,0.3)]">
+        <nav className="fixed top-0 left-0 z-20 bg-slate-800 w-full border-b-4 border-slate-800/5 shadow-[0_6px_12px_-6px_rgba(255,255,255,0.3)]">
             <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-4 sm:px-6">
                 {/* Home a la izquierda */}
                 <div className="flex items-center gap-2">
@@ -75,13 +75,13 @@ export default function MenuBar() {
                                 )}
 
                                 {item.children && openSubmenus[item.label] && (
-                                    <ul className="absolute top-full left-0 bg-slate-800 text-white rounded mt-1 min-w-[150px] shadow-lg z-50">
+                                    <ul className="absolute top-full left-0 bg-slate-800 text-white rounded mt-1 min-w-[150px] shadow-lg z-30">
                                         {item.children.map(child => (
                                             <Link key={child.label} href={child.path} onClick={() => {
                                                 // Contraer el submenu al hacer click
                                                 setOpenSubmenus(prev => ({ ...prev, [item.label]: false }));
                                             }}>
-                                                <li className="px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                                                <li className="z-50 px-4 py-2 hover:bg-slate-700 cursor-pointer">
                                                     {child.label}
                                                 </li>
                                             </Link>

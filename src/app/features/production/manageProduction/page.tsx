@@ -216,7 +216,7 @@ export default function ManageProduction() {
             <div className="flex gap-8 w-[90%] md:w-[65%] pb-12 max-h-[600px] overflow-y-auto">
                 {/* Models Table */}
                 <table className="w-full border border-gray-300 border-collapse">
-                    <thead className="sticky top-0 z-20 bg-black text-white w-full text-2xl">
+                    <thead className="sticky top-0 z-10 bg-black text-white w-full text-2xl">
                         <tr>
                             <th className="p-2">Brand</th>
                             <th className="p-2">Model</th>
