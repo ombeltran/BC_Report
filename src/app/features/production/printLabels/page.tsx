@@ -1,16 +1,54 @@
+'use client'
+import { useSearchParams } from "next/navigation";
 import Barcode from "@/components/Barcode";
 
-
 function printLabels() {
+    const searchParams = useSearchParams();
+
+    const serial = searchParams.get("serial");
+    const upc = searchParams.get("upc");
+    const model = searchParams.get("model");
+
     return (
-        <div className="flex items-center justify-center h-screen w-full px-12 bg-white">
+        <div className="flex flex-col items-center justify-center h-screen w-full px-12 bg-white">
             <div className="flex flex-col items-center justify-center border-2 border-black w-auto">
-                <Barcode value="840133997804" />
-                <p className="border border-black w-full"></p>
-                <Barcode value="NFRC871056116D0121" />
+
+                {/* Modelo */}
+                <h2 className="font-bold text-2xl mb-4 text-black">
+                    {model}
+                </h2>
+
+                {/* UPC */}
+                <Barcode value={upc || ""} />
+
+                <p className="border border-black w-full my-2"></p>
+
+                {/* SERIAL */}
+                <Barcode value={serial || ""} />
+            </div>
+
+            <div className="flex gap-4 py-2 no-print">
+                {/* Oopen printer box */}
+                <button
+                    className="mt-4 bg-black text-white px-4 py-2 rounded cursor-pointer"
+                    onClick={() => window.print()}
+                >
+                    Print
+                </button>
+
+                {/* Botón para volver */}
+                <button
+                    className="mt-4 bg-black text-white px-4 py-2 rounded cursor-pointer"
+                    onClick={() => {
+                        window.close()
+                        history.back()
+                    }}
+                >
+                    Close and return
+                </button>
             </div>
         </div>
-    )
+    );
 }
 
-export default printLabels
+export default printLabels;

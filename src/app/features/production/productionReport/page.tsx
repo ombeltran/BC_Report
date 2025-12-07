@@ -244,6 +244,7 @@ function ProductionPage() {
                         <input
                             className="border-2 border-slate-100/50 rounded p-2 sm:min-w-[334px] w-[250px]"
                             list="models"
+                            id="model"
                             name="model"
                             placeholder="Select or type a model"
                         />

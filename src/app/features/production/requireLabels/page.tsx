@@ -127,6 +127,16 @@ function requireLabels() {
       return;
     }
 
+    if(form.upc.value.length === 0){
+      setAlertForm("The UPC field is required.");
+      return;
+    }
+
+    if(form.qty.value.length === 0){
+      setAlertForm("The Quantity field is required.");
+      return;
+    }
+
     const newLabelData = {
       brand: form.brand.value,
       model: form.model.value,
@@ -157,8 +167,6 @@ function requireLabels() {
         throw new Error(`Label with error: ${res.status}`);
       }
 
-      // const createdLabel = await res.json();
-      // setLabels(prev => [...prev, { ...createdLabel, submittedAt: new Date().toISOString() }]);
       await fetchLabels();
 
       form.reset();

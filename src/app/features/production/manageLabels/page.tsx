@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { FiRefreshCcw } from "react-icons/fi";
-import { useRouter } from "next/navigation";
 
 function manageLabels() {
   interface Label {
@@ -24,7 +23,6 @@ function manageLabels() {
     lastName: string;
   }
 
-
   const [idNum, setIdNum] = useState<number>();
   const [brand, setBrand] = useState<string>("");
   const [model, setModel] = useState<string>("");
@@ -35,8 +33,6 @@ function manageLabels() {
   const [requiredBy, setRequiredBy] = useState<string>("");
   const [labels, setLabels] = useState<Label[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  // const [barCode, setBarCode] = useState<boolean>(false);
-  const router = useRouter();
 
   const fetchLabels = async () => {
     try {
@@ -219,7 +215,13 @@ function manageLabels() {
 
               <div className="flex flex-col gap3">
                 <label htmlFor="upc" className="text-slate-100/50">UPC</label>
-                <input type="text" id="upc" className="text-xl" value={upc} readOnly />
+                <input
+                  type="text"
+                  id="upc"
+                  className="text-xl focus:bg-white focus:text-black"
+                  value={upc}
+                  onChange={(e) => setUpc(e.target.value)}
+                />
               </div>
             </div>
 
@@ -243,7 +245,13 @@ function manageLabels() {
 
               <button
                 className="bg-red-600 h-10 px-4 rounded-xl font-semibold w-[48%] cursor-pointer"
-                onClick={() => router.push("/features/production/printLabels")}
+                onClick={(e) => {
+                  e.preventDefault()
+                  window.open(
+                    `/features/production/printLabels?serial=${serialN}&upc=${upc}&model=${model}`,
+                    "_blank"
+                  );
+                }}
               >
                 Print label
               </button>
