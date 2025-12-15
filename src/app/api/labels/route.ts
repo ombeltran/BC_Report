@@ -33,8 +33,8 @@ export async function POST(request: Request) {
         // Validate fields
         if (!brand) { return NextResponse.json({ error: "Brand field is required" }, { status: 400 }); }
         if (!model) { return NextResponse.json({ error: "Model field is required" }, { status: 400 }); }
-        if (!seria_N) { return NextResponse.json({ error: "Serial number field is required" }, { status: 400 }); }
-        if (!upc) { return NextResponse.json({ error: "UPC field is required" }, { status: 400 }); }
+        // if (!seria_N) { return NextResponse.json({ error: "Serial number field is required" }, { status: 400 }); }
+        // if (!upc) { return NextResponse.json({ error: "UPC field is required" }, { status: 400 }); }
         if (!userId) { return NextResponse.json({ error: "userId field is required" }, { status: 400 }); }
         if (!qty) { return NextResponse.json({ error: "Quantity field is required" }, { status: 400 }); }
 

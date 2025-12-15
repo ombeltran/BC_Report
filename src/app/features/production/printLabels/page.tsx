@@ -19,12 +19,19 @@ function printLabels() {
                 </h2>
 
                 {/* UPC */}
-                <Barcode value={upc || ""} />
+                {
+                    upc && <Barcode value={upc || ""} />                    
+                }
 
-                <p className="border border-black w-full my-2"></p>
+                {
+                    (upc && serial) && <p className="border border-black w-full my-2"></p>
+                }
 
                 {/* SERIAL */}
-                <Barcode value={serial || ""} />
+                {
+                    serial && <Barcode value={serial || ""} />
+                }
+                
             </div>
 
             <div className="flex gap-4 py-2 no-print">

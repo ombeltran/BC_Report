@@ -127,12 +127,13 @@ function requireLabels() {
       return;
     }
 
-    if(form.upc.value.length === 0){
+    // if(form.upc.value.length === 0){
+    if (!form.upc) {
       setAlertForm("The UPC field is required.");
       return;
     }
 
-    if(form.qty.value.length === 0){
+    if (form.qty.value.length === 0) {
       setAlertForm("The Quantity field is required.");
       return;
     }
