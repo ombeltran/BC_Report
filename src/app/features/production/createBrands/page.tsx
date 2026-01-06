@@ -165,7 +165,7 @@ export default function CreateModels() {
               }
             </div>
             <div className="text-center">
-              <label className="flex items-center gap-2">
+              <label className="noInclude flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={checked}

@@ -20,3 +20,18 @@ body {
     background: white;
   }
 }
+
+h1, h2, h3, label, th {
+  pointer-events: none;  
+  user-select: none;     
+}
+
+p, li {
+  /* pointer-events: none;   */
+  user-select: none;     
+}
+
+.noInclude { 
+  pointer-events: auto !important; 
+  user-select: text !important; 
+}
